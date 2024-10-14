@@ -1,0 +1,160 @@
+@charset "utf-8";
+*{
+    
+    padding: 0;
+    margin: 0;
+}
+
+body{
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.wrap   {
+    background-color: white;
+}
+
+
+.top {
+    display: flex;
+    justify-content: flex-end;
+    width: 100vh;
+    height: 50px;
+    font-size: 0.8rem;
+    background-color: rgb(51, 43, 43);
+    color: rgb(255, 255, 255);
+    
+}
+
+.top .login {
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;    
+    justify-content: end;
+    font-weight: bold;
+    cursor: pointer;
+    padding-right: 10px;
+    position: relative;
+    left: -140px;
+    
+}
+
+ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 600px;
+    height: 50px;
+}
+
+li{
+    display: flex;
+    font-size: 0.8rem;
+    font-weight: bold;
+    position: relative;
+    left: -10px;
+}
+
+a{
+    list-style-type: none;
+    text-decoration: none;
+    color: unset;
+}
+
+
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 600px;
+    height: 150px;
+    position: relative;
+    right: -130px;
+}
+
+.menu{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: rgb(51, 43, 43);
+    color: rgb(255, 255, 255);
+    position: relative;
+    right: -130px;
+}
+
+.menu1:hover {text-decoration: underline;}
+.menu2:hover {text-decoration: underline;}
+.menu3:hover {text-decoration: underline;}
+.menu4:hover {text-decoration: underline;}
+.menu5:hover {text-decoration: underline;}
+
+/* ------ */
+.back{
+
+    padding-top: 10px;
+    background-color: lightcyan;
+    align-items: center;
+}
+
+h3{
+    text-align: center; 
+    margin: 10px;
+    letter-spacing: 0.5em;
+}
+
+.form{
+    margin: auto;
+    width: 250px;
+    
+    background-color: white;
+    padding: 15px
+}
+
+label{display: block; font-weight: bold; margin: 0.3px;}
+input.c1{display: block; width: 100%; margin: 0.3px;}
+
+.c2 {
+    display: inline;
+}
+.c3{
+    display: inline;
+    font-weight: bold;
+}
+.join{
+    letter-spacing: 5px;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    background-color: green;
+    color: white;
+    margin: 5px;
+    font-weight: bold;
+    cursor: pointer;   
+    padding: 3px;
+}
+
+.date{
+    margin-bottom: 10px;
+}
+
+.footer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vh;
+    height: 70px;
+    font-size: 0.8rem;
+    color: white;
+    font-weight: bold;
+    background-color: rgb(138, 136, 136);
+    position: relative;
+    bottom: -20px;
+
+}
+.footertext{
+    padding-right: 6px;
+}

@@ -1,0 +1,101 @@
+@charset 'utf-8';
+
+* {
+  /* outline:1px solid red; */
+  padding:0;
+  margin:0;
+}
+
+ul {
+  list-style-type: none;
+}
+a {
+  text-decoration: none;
+  color : initial;  /* 속성값을 초기화하는 용도 */
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  /* justify-content: space-around; */
+  align-items: center;
+  padding:0px 20px; /*y축 x축*/
+  height:100px;
+  text-transform: uppercase;
+  font-weight: bold;
+  background-color: #eee;
+
+  /* 포트 적용 */
+  font-family: "Noto Sans Mono", monospace;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  font-variation-settings:"wdth" 100;
+}
+
+.header .logo,
+.header .menu,
+.header .membership {
+  display: flex;
+}
+
+/* logo */
+.header .logo{
+  /* background-color: yellow; */
+  flex:1;   /* 1 1 auto */
+}
+.header .logo .logo_img {
+  margin-right: 10px;
+}
+.header .logo .logo_text .logo_text-left{
+  text-transform: capitalize;  
+}
+.header .logo .logo_text .logo_text-right{
+  text-transform: lowercase;  
+  color : #ab1414;
+}
+/* menu */
+.header .menu {
+  display: flex;
+  justify-content: space-evenly;
+  /* background-color: lightblue; */
+  flex:4;
+}
+.header .menu .menu_item{
+  padding:5px;
+}
+.header .menu .menu_item:hover{
+  color:#fff;
+  background-color: lightblue;
+  cursor:pointer;
+  transition: all 0.5s ease;
+}
+
+
+/* membership */
+.header .membership {
+  display: flex;
+  justify-content: flex-end;
+  /* background-color: aqua; */
+  flex:2;
+}
+.header .membership .join {
+  margin-right:10px;
+}
+
+.header .membership .join,
+.header .membership .login{
+  padding:5px;
+  color:#fff;
+  background-color: rgb(90, 93, 90);
+  border-radius: 10px;
+}
+
+.header .membership .join:hover{
+  cursor:pointer;
+  background-color: rgba(71, 151, 71,0.5);
+}
+.header .membership .login:hover{
+  cursor:pointer;  
+  background-color: rgba(187, 39, 145, 0.5);
+}
