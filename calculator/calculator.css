@@ -1,0 +1,21 @@
+@charset 'utf-8';
+
+#result{
+  box-sizing: border-box;
+  width:100%;
+  text-align: right;
+}
+
+.wrap .calculator {
+  display:flex;
+  flex-direction: column;
+  width:300px;
+}
+
+.wrap .calculator .btns {
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 30px);
+  gap: 10px; 
+  margin-top: 10px;
+}
