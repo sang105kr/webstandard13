@@ -23,3 +23,6 @@ function f3(arr,f4){
 
 const result = f3(arr,f4);
 console.log(result);
+
+const result2 = f3(arr,f2);
+console.log(result2);

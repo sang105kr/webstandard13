@@ -83,3 +83,13 @@
   }
   f(person);
 }
+{
+  const person = {
+    name: '홍길동',
+    age: 30,
+  };
+  const f = ({name,age})=>{
+    console.log(a, b);
+  }
+  f(person);
+}

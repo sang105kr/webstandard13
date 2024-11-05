@@ -5,6 +5,7 @@
 //   {name:'홍길동4',age:40,blood:'O',height:190, weight:90, gender:'여'}
 // ];
 {
+   /* reduce-반환값:단일값, 용도 - 모든요소를 순회하면서 누적된 단일값으로 */
   const arr = [1,2,3,4,5];
   const result = arr.reduce((acc,ele,idx,arr)=>{
     console.log(acc,ele,idx,arr);
@@ -43,5 +44,14 @@
     }
     return acc;
   });
+  console.log(result2);
+}
+{ //최대값
+  const arr = [1,2,3,4,5];
+  const result = arr.reduce((acc,ele)=> (acc < ele) ? ele:acc );
+  console.log(result);
+  console.log('--');
+  //최소값
+  const result2 = arr.reduce((acc,ele)=> (acc > ele) ? ele : acc);
   console.log(result2);
 }
