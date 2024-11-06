@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <form action="">
+    <div id="msg"></div>
+    <div><label for="pname">상품명</label><input type="text" name="pname" id="pname"></div>
+    <div><label for="price">가격</label><input type="text" name="price" id="price"></div>
+    <div><label for="quantity">수량</label><input type="text" name="quantity" id="quantity"></div>
+    <div><button type="button" id="addBtn">등록</button></div>
+  </form>
+  <script>
+    addBtn.addEventListener('click',e=>{
+      const payLoad = {
+          "pname": pname.value,
+          "quantity": price.value,
+          "price": quantity.value
+      };    
+
+        console.log(payLoad);
+        addProduct(payLoad);
+
+    },false);
+
+    async function addProduct(payLoad){
+      const url = `http://localhost:9080/api/products`
+      try{
+        const res = await fetch(url,{
+            method:'POST',
+            headers:{
+              'Content-Type':'application/json',
+              'Accept':  'application/json'
+            },
+            // JSON.stringify(js객체) : js객체 => json포맷 문자열 
+            // JSON.parse(json포맷 문자열) : json포맷 문자열 => js객체  
+            body: JSON.stringify(payLoad)    
+          }
+        );
+        if(!res.ok){
+          throw new Error(`응답오류:${res.status}`);
+        }
+
+        const json = await res.json(); // jonson포맷 문자열 => js 객체로 변환
+        console.log(json);
+        if(json.header.rtcd == '00'){
+          msg.textContent = `상품번호 ${json.body.productId} 번으로 등록되었습니다!`;
+        }
+      }catch(err){
+        console.error(err.msesage);
+      }
+    }
+
+
+  </script>
+</body>
+</html>
