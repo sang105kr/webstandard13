@@ -30,6 +30,7 @@
   </ul>
 
   <script>
+
     reply.addEventListener('click',e=>{
       if(e.target.tagName != 'BUTTON') return;
       console.log(e.target);    // '이벤트가 발생한 요소'
@@ -66,6 +67,14 @@
       const $li = createLiReadMode(comment.value);
       reply.appendChild($li);
       comment.value = '';
+    },false);
+
+    comment.addEventListener('keydown',e=>{
+      console.log(e);
+      if(!e.shiftKey && e.key === 'Enter'){
+        e.preventDefault(); // enter눌렀을때 줄바꿈방지
+        btnAdd.click();
+      }
     },false);
 
     // 읽기모드의 li 반환
