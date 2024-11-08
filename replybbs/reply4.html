@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    #reply {
+      outline:1px solid red;
+    }
+    ul {
+      padding:0; margin:0;
+    }
+    li {
+      display: flex;
+    }
+    li span,
+    li input{
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <h3>댓글</h3>
+  <div><textarea cols="50" rows="3" id="comment"></textarea><button id="btnAdd">등록</button></div>
+  <ul id="reply">
+    <!-- <li><span>댓글1..</span><button class="btn modifyBtn">수정</button><button class="btn delBtn">삭제</button></li>
+    <li><span>댓글2..</span><button class="btn modifyBtn">수정</button><button class="btn delBtn">삭제</button></li>
+    <li><span>댓글3..</span><button class="btn modifyBtn">수정</button><button class="btn delBtn">삭제</button></li> -->
+  </ul>
+
+  <script>
+    reply.addEventListener('click',e=>{
+      if(e.target.tagName != 'BUTTON') return;
+      console.log(e.target);    // '이벤트가 발생한 요소'
+      console.log(e.currentTarget); // 이벤트 핸들러가 등록된 요소
+
+      if(e.target.classList.contains('modifyBtn')){
+        console.log('수정버튼 클릭!');
+        const textOfReadMode = e.target.closest('li').querySelector('span').textContent;
+        const $li = createLiModiFyMode(textOfReadMode);
+        reply.replaceChild($li,e.target.closest('li'));
+
+      }else if(e.target.classList.contains('delBtn')){
+        console.log('삭제버튼 클릭!');
+        if(!confirm('삭제하시겠습니까?')) return;
+        reply.removeChild(e.target.closest('li'));
+
+      }else if(e.target.classList.contains('saveBtn')){
+        console.log('저장버튼 클릭!');
+        const modifiedText = e.target.closest('li').querySelector('input').value;
+        const $li = createLiReadMode(modifiedText);
+        reply.replaceChild($li,e.target.closest('li'));
+
+      }else if(e.target.classList.contains('cancelBtn')){
+        console.log('취소버튼 클릭!');
+        const initialText = e.target.closest('li').querySelector('input').getAttribute('value');
+        const $li = createLiReadMode(initialText);
+        reply.replaceChild($li,e.target.closest('li'));
+      }
+ 
+    },false);
+
+    btnAdd.addEventListener('click',e=>{
+      console.log(e.target);
+      const $li = createLiReadMode(comment.value);
+      reply.appendChild($li);
+      comment.value = '';
+    },false);
+
+    // 읽기모드의 li 반환
+    function createLiReadMode(text){
+      const $li = document.createElement('li');
+      $li.innerHTML=`<span>${text}</span><button class="btn modifyBtn">수정</button><button class="btn delBtn">삭제</button>`;
+      return $li;
+    }
+
+    // 수정모드의 li 반환
+    function createLiModiFyMode(text){
+      const $li = document.createElement('li');
+      $li.innerHTML=`<input type='text' value='${text}'></textarea><button class="btn saveBtn">저장</button><button class="btn cancelBtn">취소</button>`;
+      return $li;      
+    }    
+  </script>
+</body>
+</html>

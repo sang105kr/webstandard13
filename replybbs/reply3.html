@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    #reply {
+      outline:1px solid red;
+    }
+  </style>
+</head>
+<body>
+  <h3>댓글</h3>
+  <div><input type="text" name="" id="comment"><button id="btnAdd">등록</button></div>
+  <ul id="reply">
+    <!-- <li>댓글1..<button>삭제</button></li>
+    <li>댓글2..<button>삭제</button></li>
+    <li>댓글3..<button>삭제</button></li> -->
+  </ul>
+
+  <script>
+    reply.addEventListener('click',e=>{
+      if(e.target.tagName != 'BUTTON') return;
+      console.log(e.target);    // '이벤트가 발생한 요소'
+      console.log(e.currentTarget); // 이벤트 핸들러가 등록된 요소
+
+      if(!confirm('삭제하시겠습니까?')) return;
+      reply.removeChild(e.target.closest('li'));
+    },false);
+
+    btnAdd.addEventListener('click',e=>{
+      console.log(e.target);
+      const $li = document.createElement('li');  // <li></li>
+      $li.textContent = comment.value; // <li>댓글</li>
+
+      const $addBtn = document.createElement('button');
+      $addBtn.textContent = '삭제';
+
+      $li.appendChild($addBtn);
+      reply.appendChild($li);
+
+      comment.value = '';
+    },false);
+  </script>
+</body>
+</html>

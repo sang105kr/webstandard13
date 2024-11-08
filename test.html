@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .completed {
+            text-decoration: line-through;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+    <h1>To-Do List</h1>
+    <input type="text" id="todoInput" placeholder="할 일을 입력하세요">
+    <button id="addButton">추가</button>
+    <ul id="todoList"></ul>
+
+    <script>
+        class TodoApp {
+            constructor() {
+                this.todoInput = document.getElementById('todoInput');
+                this.addButton = document.getElementById('addButton');
+                this.todoList = document.getElementById('todoList');
+
+                this.addButton.addEventListener('click', () => this.addTodo());
+                this.todoList.addEventListener('click', (event) => this.toggleComplete(event));
+            }
+
+            addTodo() {
+                const todoText = this.todoInput.value.trim();
+                if (todoText) {
+                    const li = document.createElement('li');
+                    li.textContent = todoText;
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = '삭제';
+                    deleteButton.addEventListener('click', () => this.deleteTodo(li));
+
+                    li.appendChild(deleteButton);
+                    this.todoList.appendChild(li);
+                    this.todoInput.value = '';
+                }
+            }
+
+            deleteTodo(li) {
+                this.todoList.removeChild(li);
+            }
+
+            toggleComplete(event) {
+                const li = event.target.closest('li');
+                if (li) {
+                    li.classList.toggle('completed');
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new TodoApp();
+        });
+    </script>
+</body>
+</html>
