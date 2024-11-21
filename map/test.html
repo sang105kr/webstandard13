@@ -8,27 +8,33 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"
     />
     <title>간단한 지도 표시하기</title>
-    <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=uhq6cts1yx&callback=main"></script>
-    <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=0d19dafd2380499ec9c17a01cf58170b&libraries=services,clusterer,drawing"></script>
+    <script
+      type="text/javascript"
+      src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=uhq6cts1yx&callback=main"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=0d19dafd2380499ec9c17a01cf58170b&libraries=services,clusterer,drawing"
+    ></script>
     <style>
       body {
         margin: 0;
         padding: 0;
       }
       .wrap {
-        position:relative;
+        position: relative;
       }
 
-      #search{
+      #search {
         display: flex;
         justify-content: space-between;
-        position:absolute;
-        top:50px;
-        left:50px;
-        padding:7px;
+        position: absolute;
+        top: 50px;
+        left: 50px;
+        padding: 7px;
         background-color: #fff;
         border: 1px solid #000;
-        width:270px;
+        width: 270px;
         font-size: 0.8rem;
         font-weight: bold;
       }
@@ -40,56 +46,81 @@
         border-radius: 5%;
         background-color: yellow;
       }
-      
     </style>
   </head>
   <body>
     <div class="wrap">
       <div id="map" style="width: 100vw; height: 100vh"></div>
       <div id="search">
-        <label for="">검색어</label><input id='keyword' type="text"><button id="searchBtn">검색</button>
+        <label for="">검색어</label><input id="keyword" type="text" /><button
+          id="searchBtn"
+        >
+          검색
+        </button>
       </div>
     </div>
     <script>
 
-      // 장소 검색 객체를 생성합니다
-      const ps = new kakao.maps.services.Places(); 
+      // 전역에 var변수는 전역객체의 속성으로 등록됨
+      var mymap = {
+        map: null,        // 지도객체
+        whereAmI : {      // 내위치정보
+          lat: '',
+          lng: ''
+        }
+      };
 
       // 키워드로 장소를 검색합니다
-      // ps.keywordSearch('공업탑', placesSearchCB); 
+      // ps.keywordSearch('공업탑', placesSearchCB);
 
-      // 키워드 검색 완료 시 호출되는 콜백함수 입니다
-      function placesSearchCB (data, status, pagination) {
-          console.dir(data);
-          console.log(status)
-          console.dir(pagination);
-          if (status === kakao.maps.services.Status.OK) {
 
-              // // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
-              // // LatLngBounds 객체에 좌표를 추가합니다
-              // var bounds = new kakao.maps.LatLngBounds();
-
-              for (var i=0; i<data.length; i++) {
-                  const marker = makeMarker(window.mymap, data[i].y, data[i].x)
-                  // displayMarker(data[i]);    
-                  // bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
-              }       
-
-              // // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
-              // map.setBounds(bounds);
-          } 
+      // 마커 제거
+      function removeMaker(marker){
+        marker.setMap(null);
       }
 
-      searchBtn.addEventListener('click',e=>{
-        alert(keyword.value);
-        // 키워드로 장소를 검색합니다
-        ps.keywordSearch(keyword.value, placesSearchCB); 
-      },false);
+      // 마커 제거
+      function removeMakers(markers){
+        markers.forEach(marker=>marker.setMap(null));
+      }
+
+      // 키워드 검색 완료 시 호출되는 콜백함수 입니다
+      const markers = [];
+      function placesSearchCB (data, status, pagination) {
+        console.dir(data);
+        console.log(status)
+        console.dir(pagination);
+        if (status === kakao.maps.services.Status.OK) {
+
+            // // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
+            // // LatLngBounds 객체에 좌표를 추가합니다
+            // var bounds = new kakao.maps.LatLngBounds();
+
+            // 기존 마커 정보 제거
+            removeMakers(markers);
+            // 마커 배열 요소 제거
+            markers.splice(0,markers.length);
+
+            for (let i=0; i<data.length; i++) {
+                const marker = makeMarker(mymap.map, data[i].y, data[i].x)
+                markers.push(marker);
+                // displayMarker(data[i]);
+                // bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
+            }
+
+            if(pagination.hasNextPage){
+              pagination.nextPage();
+            }
+            // // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
+            // map.setBounds(bounds);
+        }
+      }
+
 
       // 위치 정보를 가져오는 함수를 Promise로 래핑
       function getCurrentPosition() {
         return new Promise((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject);
+          window.navigator.geolocation.getCurrentPosition(resolve, reject);
         });
       }
 
@@ -99,7 +130,9 @@
           center: new N.LatLng(lat, lng),
           zoom: 15,
         };
-        return new N.Map('map', mapOptions);
+        const map = new N.Map('map', mapOptions);
+        mymap.map = map;
+        return map;
       }
 
       // 마커 생성 함수
@@ -120,6 +153,7 @@
 
       // 정보창 열기/닫기 토글 함수
       function toggleInfoWindow(map, marker, infowindow) {
+        //맵에 정보창 있으면 닫고 없으면 띄우기
         if (infowindow.getMap()) {
           infowindow.close();
         } else {
@@ -128,7 +162,8 @@
       }
 
       //정보창 설정 함수
-      function setupInfoWindow(map, marker, lat, lng) {
+      function setupInfoWindow(map, marker) {
+        //정보창 문구 생성
         const contentString = generateInfoWindowContent();
 
         //정보창
@@ -141,7 +176,38 @@
           toggleInfoWindow(map, marker, infowindow);
         });
 
+        //정보창 띄우기
         infowindow.open(map, marker);
+      }
+
+      //장소 검색 서비스 등록
+      function setupKaKaoServicesPlaces(map){
+          // 장소 검색 객체를 생성합니다
+          console.log(map);
+          const ps = new kakao.maps.services.Places(map);
+
+          searchBtn.addEventListener('click',e=>{
+            // alert(keyword.value);
+            // 키워드로 장소를 검색합니다
+
+            const options = {
+                          // category_group_code String : 키워드 필터링을 위한 카테고리 코드
+              location:new kakao.maps.LatLng(mymap.whereAmI.lat, mymap.whereAmI.lng),            // location LatLng : 중심 좌표. 특정 지역을 기준으로 검색한다.
+                          // x Number : x 좌표, longitude, location 값이 있으면 무시된다.
+                          // y Number : y 좌표, latitude, location 값이 있으면 무시된다.
+              radius:10000,           // radius Number : 중심 좌표로부터의 거리(반경) 필터링 값. location / x , y / useMapCenter 중 하나와 같이 써야 의미가 있음. 미터(m) 단위. 기본값은 5000, 0~20000까지 가능
+                          // bounds LatLngBounds : 검색할 사각형 영역
+                          // rect String : 사각 영역. 좌x,좌y,우x,우y 형태를 가짐. bounds 값이 있으면 무시된다.
+              size:15,              // size Number : 한 페이지에 보여질 목록 개수. 기본값은 15, 1~15까지 가능
+                          // page Number : 검색할 페이지. 기본값은 1, size 값에 따라 1~45까지 가능
+              sort: kakao.maps.services.SortBy.DISTANCE           // sort SortBy : 정렬 옵션. DISTANCE 일 경우 지정한 좌표값에 기반하여 동작함. 기본값은 ACCURACY (정확도 순)
+                          // useMapCenter Boolean : 지정한 Map 객체의 중심 좌표를 사용할지의 여부. 참일 경우, location 속성은 무시된다. 기본값은 false
+                          // useMapBounds Boolean : 지정한 Map 객체의 영역을 사용할지의 여부. 참일 경우, bounds 속성은 무시된다. 기본값은 false
+            };
+
+            ps.keywordSearch(keyword.value, placesSearchCB, options);
+
+          },false);
       }
 
       // 위치 정보를 가져오는 async함수
@@ -150,17 +216,20 @@
           const position = await getCurrentPosition();
           const { latitude: lat, longitude: lng } = position.coords;
           console.log(`위도:${lat}, 경도:${lng}`);
+          mymap.whereAmI.lat = lat;
+          mymap.whereAmI.lng = lng;
 
           //지도 초기화
           const map = initializeMap(lat, lng);
-          window.mymap = map;
-          
 
           //내위치 마커표시
           const marker = makeMarker(map, lat, lng);
 
           //정보창 설정
-          setupInfoWindow(map, marker, lat, lng);
+          setupInfoWindow(map, marker);
+
+          //장소 검색 서비스 등록
+          setupKaKaoServicesPlaces(map);
 
         } catch (err) {
           console.error('위치 정보를 가져오기 실패!', err);
@@ -168,6 +237,7 @@
       }
 
       function main() {
+        // 지도 초기화
         fetchLocation();
       }
 
