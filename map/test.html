@@ -46,6 +46,15 @@
         border-radius: 5%;
         background-color: yellow;
       }
+
+      .wrap .search_result {
+        position: absolute;
+        top:100px;
+        left:50px;
+        z-index: 9999;
+        background-color: #fff8;
+        border: 1px solid #000;
+      }
     </style>
   </head>
   <body>
@@ -84,6 +93,44 @@
         markers.forEach(marker=>marker.setMap(null));
       }
 
+      function makePlaceList(data, pagination){
+        const searchResultEle = document.createElement('div');
+        searchResultEle.classList.add('search_result');
+
+        const placeListEle = document.createElement('div');
+        placeListEle.classList.add('place_list');
+
+        const pagingEle = document.createElement('div');
+        pagingEle.classList.add('paging');
+
+        searchResultEle.appendChild(placeListEle);
+        searchResultEle.appendChild(pagingEle)
+        
+        const place_list_html = data.map(place=> {
+          return `<div><span>${place.place_name}</span></div>` }
+        ).join('');
+        placeListEle.innerHTML = place_list_html;
+
+        let paging_html = '';
+        for(let i=pagination.first; i<=pagination.last; i++){
+          paging_html += `<span>${i}</span>`;
+        }
+        pagingEle.innerHTML = paging_html;
+
+        const pages = [...pagingEle.querySelectorAll('span')];
+        pages.forEach(page =>
+          page.addEventListener('click',e=>{ 
+            console.log(e.target.textContent) 
+            const pageNum = e.target.textContent;
+            pagination.gotoPage(pageNum);
+          },false)
+        );
+
+        //document.body.appendChild(searchResultEle);
+        return searchResultEle;
+      }
+
+
       // 키워드 검색 완료 시 호출되는 콜백함수 입니다
       const markers = [];
       function placesSearchCB (data, status, pagination) {
@@ -112,6 +159,18 @@
                 markers.push(marker);
                 // displayMarker(data[i]);
                 // bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
+            }
+
+            const searchResultEle = makePlaceList(data,pagination);
+            
+            const isExist = document.querySelector('.search_result') ? true : false;
+
+            if(!isExist){
+              console.log('존재');
+              document.querySelector('.wrap').appendChild(searchResultEle);
+            }else{
+              console.log('미존재');
+              document.querySelector('.wrap').replaceChild(searchResultEle, document.querySelector('.search_result'));
             }
 
             // if(pagination.hasNextPage){
