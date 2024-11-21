@@ -98,8 +98,14 @@
 
             // 기존 마커 정보 제거
             removeMakers(markers);
+
             // 마커 배열 요소 제거
-            markers.splice(0,markers.length);
+            if(markers.length > 0) {
+              // case1)
+              // markers.length = 0;
+              // case2)
+              markers.splice(0,markers.length);
+            }
 
             for (let i=0; i<data.length; i++) {
                 const marker = makeMarker(mymap.map, data[i].y, data[i].x)
@@ -108,9 +114,9 @@
                 // bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
             }
 
-            if(pagination.hasNextPage){
-              pagination.nextPage();
-            }
+            // if(pagination.hasNextPage){
+            //   pagination.nextPage();
+            // }
             // // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
             // map.setBounds(bounds);
         }

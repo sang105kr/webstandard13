@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div>
+    <div class="place_list">
+      <div><span>장소명1</span></div>
+      <div><span>장소명2</span></div>
+      <div><span>장소명3</span></div>
+    </div>
+    <div class="paging">
+      <span><a href="">1</a></span><span><a href="">2</a></span><span><a href="">3</a></span>
+    </div>
+  </div>
+
+  <script>
+    const data = [
+      {place_name:'장소1'},
+      {place_name:'장소2'},
+      {place_name:'장소3'},
+    ];
+    const pagenation = {
+      first:1,
+      last:3
+    } 
+    
+    const place_list_html = data.map(place=> {
+      return `<div><span>${place.place_name}</span></div>` }
+    ).join('');
+    document.querySelector('.place_list').innerHTML = place_list_html;
+
+    let paging_html = '';
+    for(let i=pagenation.first; i<=pagenation.last; i++){
+      paging_html += `<span><a href="">${i}</a></span>`;
+    }
+
+    document.querySelector('.paging').innerHTML = paging_html;
+  </script>
+</body>
+</html>
