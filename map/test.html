@@ -79,6 +79,10 @@
         }
       };
 
+      // 키워드 검색 완료 시 호출되는 콜백함수 입니다
+      const markers = [];
+      const infowindows = [];
+
       // 마커 제거
       function removeMaker(marker){
         marker.setMap(null);
@@ -91,29 +95,38 @@
 
       // 검색 결과 목록 
       function makePlaceList(data, pagination,map,markers,infowindows){
-        const searchResultEle = document.createElement('div');
-        searchResultEle.classList.add('search_result');
+        const searchResultEle = document.createElement('div');  // <div></div>
+        searchResultEle.classList.add('search_result');         // <div class='search_result'></div>
 
-        const placeListEle = document.createElement('div');
-        placeListEle.classList.add('place_list');
+        const placeListEle = document.createElement('div');     // <div></div>
+        placeListEle.classList.add('place_list');               // <div class='place_list'></div>
 
-        const pagingEle = document.createElement('div');
-        pagingEle.classList.add('paging');
+        const pagingEle = document.createElement('div');        // <div></div>
+        pagingEle.classList.add('paging');                      // <div class='paging'></div>
 
-        searchResultEle.appendChild(placeListEle);
-        searchResultEle.appendChild(pagingEle)
+        searchResultEle.appendChild(placeListEle);    // <div class='search_result'><div class='place_list'></div></div>
+        searchResultEle.appendChild(pagingEle)        // <div class='search_result'><div class='place_list'></div><div class='paging'></div></div>
         
         const place_list_html = data.map((place,idx)=> {
           return `<div><span data-idx="${idx}">${place.place_name}</span></div>` }
-        ).join('');
+        ).join(''); // <div><span data-idx="0">장소명1</span></div><div><span data-idx="1">장소명2</span></div>...
+
         placeListEle.innerHTML = place_list_html;
+
+        //목록 이벤트 등록    
         const lists = [...placeListEle.querySelectorAll('span')];
-        lists.forEach((item,idx) => 
-          item.addEventListener('mouseover',e=>{
-            infowindows[idx].open(map,markers[idx]);
-          },false)
+        lists.forEach((item,idx) => {
+            item.addEventListener('mouseover',e=>{
+              infowindows[idx].open(map,markers[idx]);
+            },false);
+
+            item.addEventListener('mouseout',e=>{
+              infowindows[idx].close();
+            },false);            
+          }
         );    
 
+        // 페이징 이벤트 등록
         let paging_html = '';
         for(let i=pagination.first; i<=pagination.last; i++){
           paging_html += `<span>${i}</span>`;
@@ -123,7 +136,7 @@
         const pages = [...pagingEle.querySelectorAll('span')];
         pages.forEach(page =>
           page.addEventListener('click',e=>{ 
-            console.log(e.target.textContent) 
+            // console.log(e.target.textContent) 
             const pageNum = e.target.textContent;
             pagination.gotoPage(pageNum);
           },false)
@@ -132,10 +145,6 @@
         //document.body.appendChild(searchResultEle);
         return searchResultEle;
       }
-
-      // 키워드 검색 완료 시 호출되는 콜백함수 입니다
-      const markers = [];
-      const infowindows = [];
 
       function placesSearchCB (data, status, pagination) {
         console.dir(data);
@@ -178,7 +187,7 @@
               infowindows[idx].close();
             }));
 
-
+            // 검색결과 목록 표시
             const wrapEle = document.querySelector('.wrap');
             const searchResultEle = makePlaceList(data,pagination,mymap.map,markers,infowindows);
             const isExist = document.querySelector('.search_result') ? true : false;
@@ -205,7 +214,6 @@
           zoom: 15,
         };
         const map = new N.Map('map', mapOptions);
-        mymap.map = map;
         return map;
       }
 
@@ -245,19 +253,18 @@
           content: contentString,
         });
 
-        //마커 클릭 이벤트 리스너 추가
-        naver.maps.Event.addListener(marker, 'click', function (e) {
-          toggleInfoWindow(map, marker, infowindow);
-        });
-
         //정보창 띄우기
         infowindow.open(map, marker);
+
+        //마커 클릭 이벤트 리스너 추가
+        naver.maps.Event.addListener(marker, 'click', e => toggleInfoWindow(map, marker, infowindow));
+
       }
 
       //장소 검색 서비스 등록
       function setupKaKaoServicesPlaces(map){
+
           // 장소 검색 객체를 생성합니다
-          console.log(map);
           const ps = new kakao.maps.services.Places(map);
 
           searchBtn.addEventListener('click',e=>{
@@ -295,6 +302,7 @@
 
           //지도 초기화
           const map = initializeMap(lat, lng);
+          mymap.map = map;
 
           //내위치 마커표시
           const marker = makeMarker(map, lat, lng);
