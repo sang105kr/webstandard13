@@ -79,10 +79,6 @@
         }
       };
 
-      // 키워드로 장소를 검색합니다
-      // ps.keywordSearch('공업탑', placesSearchCB);
-
-
       // 마커 제거
       function removeMaker(marker){
         marker.setMap(null);
@@ -93,7 +89,8 @@
         markers.forEach(marker=>marker.setMap(null));
       }
 
-      function makePlaceList(data, pagination){
+      // 검색 결과 목록 
+      function makePlaceList(data, pagination,map,markers,infowindows){
         const searchResultEle = document.createElement('div');
         searchResultEle.classList.add('search_result');
 
@@ -106,10 +103,16 @@
         searchResultEle.appendChild(placeListEle);
         searchResultEle.appendChild(pagingEle)
         
-        const place_list_html = data.map(place=> {
-          return `<div><span>${place.place_name}</span></div>` }
+        const place_list_html = data.map((place,idx)=> {
+          return `<div><span data-idx="${idx}">${place.place_name}</span></div>` }
         ).join('');
         placeListEle.innerHTML = place_list_html;
+        const lists = [...placeListEle.querySelectorAll('span')];
+        lists.forEach((item,idx) => 
+          item.addEventListener('mouseover',e=>{
+            infowindows[idx].open(map,markers[idx]);
+          },false)
+        );    
 
         let paging_html = '';
         for(let i=pagination.first; i<=pagination.last; i++){
@@ -130,18 +133,16 @@
         return searchResultEle;
       }
 
-
       // 키워드 검색 완료 시 호출되는 콜백함수 입니다
       const markers = [];
+      const infowindows = [];
+
       function placesSearchCB (data, status, pagination) {
         console.dir(data);
         console.log(status)
         console.dir(pagination);
-        if (status === kakao.maps.services.Status.OK) {
 
-            // // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
-            // // LatLngBounds 객체에 좌표를 추가합니다
-            // var bounds = new kakao.maps.LatLngBounds();
+        if (status === kakao.maps.services.Status.OK) {
 
             // 기존 마커 정보 제거
             removeMakers(markers);
@@ -153,34 +154,42 @@
               // case2)
               markers.splice(0,markers.length);
             }
-
-            for (let i=0; i<data.length; i++) {
-                const marker = makeMarker(mymap.map, data[i].y, data[i].x)
-                markers.push(marker);
-                // displayMarker(data[i]);
-                // bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
+            
+            // 정보창 배열 요소 제거
+            if(infowindows.length > 0) {
+              infowindows.splice(0,infowindows.length);
             }
 
-            const searchResultEle = makePlaceList(data,pagination);
-            
+            data.forEach(place => {
+                //마커 생성
+                markers.push(makeMarker(mymap.map, place.y, place.x));
+                
+                //정보창 생성
+                infowindows.push( new naver.maps.InfoWindow({content: place.place_name}));    
+            })
+              
+            // 마커 mouseover 시 인포창 표시하기
+            markers.forEach((marker,idx) => kakao.maps.event.addListener(marker, 'mouseover', e=>{
+              infowindows[idx].open(mymap.map, marker);
+            }));
+
+            // 마커 mouseout 시 인포창 숨기기
+            markers.forEach((marker,idx) => kakao.maps.event.addListener(marker, 'mouseout', e=>{
+              infowindows[idx].close();
+            }));
+
+
+            const wrapEle = document.querySelector('.wrap');
+            const searchResultEle = makePlaceList(data,pagination,mymap.map,markers,infowindows);
             const isExist = document.querySelector('.search_result') ? true : false;
 
             if(!isExist){
-              console.log('존재');
-              document.querySelector('.wrap').appendChild(searchResultEle);
+              wrapEle.appendChild(searchResultEle);
             }else{
-              console.log('미존재');
-              document.querySelector('.wrap').replaceChild(searchResultEle, document.querySelector('.search_result'));
+              wrapEle.replaceChild(searchResultEle, document.querySelector('.search_result'));
             }
-
-            // if(pagination.hasNextPage){
-            //   pagination.nextPage();
-            // }
-            // // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
-            // map.setBounds(bounds);
         }
       }
-
 
       // 위치 정보를 가져오는 함수를 Promise로 래핑
       function getCurrentPosition() {
