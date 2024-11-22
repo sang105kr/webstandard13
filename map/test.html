@@ -55,6 +55,50 @@
         background-color: #fff8;
         border: 1px solid #000;
       }
+
+      .wrap .myMarker {
+        width: 20px;
+        height: 20px;
+        background-color: rgba(255, 0, 0, 0.3);
+        border-radius: 50%;
+        position: relative;
+      }
+
+      .wrap .myMarker::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 0, 0, 0.3);
+        border-radius: 50%;
+        animation: ripple 2s infinite ease-out;
+        top: 0;
+        left: 0;
+      }
+
+      .wrap .myMarker::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 0, 0, 0.3);
+        border-radius: 50%;
+        animation: ripple 2s infinite ease-out;
+        animation-delay: 0.5s;
+        top: 0;
+        left: 0;
+      }
+
+      @keyframes ripple {
+        0% {
+          transform: scale(1);
+          opacity: 0.3;
+        }
+        100% {
+          transform: scale(4);
+          opacity: 0;
+        }
+      }      
     </style>
   </head>
   <body>
@@ -218,11 +262,29 @@
       }
 
       // 마커 생성 함수
-      function makeMarker(map, lat, lng) {
-        return new naver.maps.Marker({
-          position: new naver.maps.LatLng(lat, lng),
-          map: map,
-        });
+      function makeMarker(map, lat, lng, iconHtml = null) {
+        let marker = null;
+
+        // icon html 마커 생성
+        if(!!iconHtml && typeof iconHtml === 'string'){
+          marker = new naver.maps.Marker({
+            position: new naver.maps.LatLng(lat, lng),
+            map: map,
+            icon: {
+              content: iconHtml,
+              size: new naver.maps.Size(22, 35),
+              anchor: new naver.maps.Point(11, 35)
+            }
+          });
+        // 기본 마커 생성  
+        }else{
+          marker = new naver.maps.Marker({
+            position: new naver.maps.LatLng(lat, lng),
+            map: map,
+          });
+        }
+
+        return marker;
       }
 
       //정보창 내용 생성 함수
@@ -305,7 +367,8 @@
           mymap.map = map;
 
           //내위치 마커표시
-          const marker = makeMarker(map, lat, lng);
+          const icon = `<div class='myMarker'></div>`
+          const marker = makeMarker(map, lat, lng, icon);
 
           //정보창 설정
           setupInfoWindow(map, marker);
