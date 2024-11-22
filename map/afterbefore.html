@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .box::before {
+      content : '오후';
+      font-size: 2rem;
+    }
+    .box::after {
+      content : '시';
+    }
+    .box.box3::before{
+      content : '';
+      display: inline-block;
+      border: 1px solid red;
+      width:10px;
+      height:10px;
+      border-radius: 50%;
+      background-color: red;
+    }
+    .box.box4{
+      position: relative;
+      display:inline;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .box.box4::before{
+      content:'';
+      display: none;
+      border: 10px solid transparent;
+      /* border-top-color: white;
+      border-right-color: white; */
+      border-bottom-color: red;
+      /* border-left-color: white ; */
+      position: absolute;
+      bottom : -10px;
+      /* left:50%; */
+      transform:translateX(-50%);
+      transition: all 5s ease;
+    }
+    .box.box4:hover::before{
+      display: block;
+      left:50%;
+    }
+  </style>
+</head>
+<body>
+  <div class="box box1">10</div>
+  <div class="box box2">11</div>
+  <div class="box box3"></div>
+  <div class="box box4">KH인재교육원</div>
+</body>
+</html>
