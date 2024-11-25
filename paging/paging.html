@@ -1,105 +1,141 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <style>
-    .active {
-      color: red;
-    }
-  </style>
-</head>
-<body>
-  <div id="pagination"></div>
-
-  <script>
-    class Pagination {
-      constructor(recordsPerPage, pagesPerPage) {
-        this.recordsPerPage = recordsPerPage;
-        this.pagesPerPage = pagesPerPage;
-        this.currentPage = 1;
-        this.currentPageGroupStart = 1;
+  <head>
+    <style>
+      .active {
+        color: red;
       }
+    </style>
+  </head>
+  <body>
+    <div id="list"></div>
+    <div id="pagination"></div>
 
-      getTotalPages(totalRecords) {
-        return Math.ceil(totalRecords / this.recordsPerPage);
-      }
+    <script>
+      class Pagination {
+        
+        //생성자
+        constructor(recordsPerPage, pagesPerPage) {
+          this.totalRecords = 0; //총 레코드수
+          this.recordsPerPage = recordsPerPage; //페이지당 레코드수
+          this.pagesPerPage = pagesPerPage; //페이지당 페이지수
+          this.currentPage = 1; //현재 페이지
+          this.currentPageGroupStart = 1; //현재 페이지의 시작페이지
+        }
+        
+        displayNavigation() {
+          const totalPages = this.getTotalPages();
+          let pageNavigation =
+            this.currentPageGroupStart > 1
+              ? '<button id="first">처음</button> <button id="prev">이전</button> '
+              : '';
 
-      displayNavigation(totalRecords) {
-        const totalPages = this.getTotalPages(totalRecords);
-        let pageNavigation = this.currentPageGroupStart > 1 ? '<button id="first">처음</button> <button id="prev">이전</button> ' : '';
+          for (
+            let i = this.currentPageGroupStart;
+            i < this.currentPageGroupStart + this.pagesPerPage && i <= totalPages;
+            i++
+          ) {
+            if (i === this.currentPage) {
+              pageNavigation += `<button class="active" id="page${i}">${i}</button> `;
+            } else {
+              pageNavigation += `<button id="page${i}">${i}</button> `;
+            }
+          }
 
-        for (let i = this.currentPageGroupStart; i < this.currentPageGroupStart + this.pagesPerPage && i <= totalPages; i++) {
-          if (i === this.currentPage) {
-            pageNavigation += `<button class="active" id="page${i}">${i}</button> `;
-          } else {
-            pageNavigation += `<button id="page${i}">${i}</button> `;
+          pageNavigation +=
+            this.currentPageGroupStart + this.pagesPerPage - 1 < totalPages
+              ? '<button id="next">다음</button> <button id="last">끝</button>'
+              : '';
+          return pageNavigation;
+        }
+        
+        //페이지 표시
+        displayPagination(callback) {
+          document.getElementById('pagination').innerHTML = this.displayNavigation();
+          for (
+            let i = this.currentPageGroupStart;
+            i < this.currentPageGroupStart + this.pagesPerPage && i <= this.getTotalPages();
+            i++
+          ) {
+            document.getElementById(`page${i}`).addEventListener('click', () => {
+              this.setCurrentPage(i);
+              callback();
+              this.displayPagination(callback);
+            });
+          }
+          if (document.getElementById('first')) {
+            document.getElementById('first').addEventListener('click', () => {
+              this.setCurrentPage(1);
+              this.currentPageGroupStart = 1;
+              callback();
+              this.displayPagination(callback);
+            });
+          }
+          if (document.getElementById('prev')) {
+            document.getElementById('prev').addEventListener('click', () => {
+              if (this.currentPageGroupStart > 1) {
+                this.setPrevPageGroup();
+                this.setCurrentPage(this.currentPageGroupStart);
+                callback();
+                this.displayPagination(callback);
+              }
+            });
+          }
+          if (document.getElementById('next')) {
+            document.getElementById('next').addEventListener('click', () => {
+              if ( this.currentPageGroupStart + this.pagesPerPage - 1 < this.getTotalPages() ) {
+                this.setNextPageGroup();
+                this.setCurrentPage(this.currentPageGroupStart);
+                callback();
+                this.displayPagination(callback);
+              }
+            });
+          }
+          if (document.getElementById('last')) {
+            document.getElementById('last').addEventListener('click', function () {
+              const totalPages = this.getTotalPages(totalRecords);
+              this.currentPageGroupStart =
+                totalPages - (totalPages % this.pagesPerPage) + 1;
+              this.setCurrentPage(totalPages);
+              callback();
+              this.displayPagination(callback);
+            });
           }
         }
 
-        pageNavigation += this.currentPageGroupStart + this.pagesPerPage - 1 < totalPages ? '<button id="next">다음</button> <button id="last">끝</button>' : '';
-        return pageNavigation;
-      }
+        getTotalRecords() {
+          return this.totalRecords;
+        }
 
-      setCurrentPage(pageNumber) {
-        this.currentPage = pageNumber;
-      }
+        getTotalPages() {
+          return Math.ceil(this.totalRecords / this.recordsPerPage);
+        }
 
-      setNextPageGroup() {
-        this.currentPageGroupStart += this.pagesPerPage;
-      }
+        setTotalRecords(totalRecords) {
+          this.totalRecords = totalRecords;
+        }
 
-      setPrevPageGroup() {
-        this.currentPageGroupStart -= this.pagesPerPage;
-        if (this.currentPageGroupStart < 1) {
-          this.currentPageGroupStart = 1;
+        setCurrentPage(pageNumber) {
+          this.currentPage = pageNumber;
+        }
+
+        setNextPageGroup() {
+          this.currentPageGroupStart += this.pagesPerPage;
+        }
+
+        setPrevPageGroup() {
+          this.currentPageGroupStart -= this.pagesPerPage;
+          if (this.currentPageGroupStart < 1) {
+            this.currentPageGroupStart = 1;
+          }
         }
       }
-    }
-
-    function displayPagination() {
-      document.getElementById('pagination').innerHTML = pagination.displayNavigation(totalRecords);
-      for (let i = pagination.currentPageGroupStart; i < pagination.currentPageGroupStart + pagination.pagesPerPage && i <= pagination.getTotalPages(totalRecords); i++) {
-        document.getElementById(`page${i}`).addEventListener('click', function() {
-          pagination.setCurrentPage(i);
-          displayPagination();
-        });
+      const pagination = new Pagination(10, 10);
+      pagination.setTotalRecords(215); // 총 레코드 수는 임의로 215으로 설정했습니다.
+      const callback = ()=>{
+        document.getElementById('list').innerHTML = '<b>방가</b>'
       }
-      if (document.getElementById('first')) {
-        document.getElementById('first').addEventListener('click', function() {
-          pagination.setCurrentPage(1);
-          pagination.currentPageGroupStart = 1;
-          displayPagination();
-        });
-      }
-      if (document.getElementById('prev')) {
-        document.getElementById('prev').addEventListener('click', function() {
-          if (pagination.currentPageGroupStart > 1) {
-            pagination.setPrevPageGroup();
-            pagination.setCurrentPage(pagination.currentPageGroupStart);
-            displayPagination();
-          }
-        });
-      }
-      if (document.getElementById('next')) {
-        document.getElementById('next').addEventListener('click', function() {
-          if (pagination.currentPageGroupStart + pagination.pagesPerPage - 1 < pagination.getTotalPages(totalRecords)) {
-            pagination.setNextPageGroup();
-            pagination.setCurrentPage(pagination.currentPageGroupStart);
-            displayPagination();
-          }
-        });
-      }
-      if (document.getElementById('last')) {
-        document.getElementById('last').addEventListener('click', function() {
-          const totalPages = pagination.getTotalPages(totalRecords);
-          pagination.currentPageGroupStart = totalPages - (totalPages % pagination.pagesPerPage) + 1;
-          pagination.setCurrentPage(totalPages);
-          displayPagination();
-        });
-      }
-    }
-    const pagination = new Pagination(10, 10);
-    const totalRecords = 215; // 총 레코드 수는 임의로 215으로 설정했습니다.    
-    displayPagination();
-  </script>
-</body>
+      pagination.displayPagination(callback);
+    </script>
+  </body>
 </html>
